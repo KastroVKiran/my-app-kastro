@@ -1,0 +1,1117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hotel Booking System</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 1rem 0;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+        }
+
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .logo {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .nav-links {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: #333;
+            font-weight: 500;
+            transition: color 0.3s;
+            cursor: pointer;
+        }
+
+        .nav-links a:hover {
+            color: #667eea;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .btn {
+            background: #667eea;
+            color: white;
+            padding: 0.7rem 1.5rem;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background 0.3s;
+        }
+
+        .btn:hover {
+            background: #5a67d8;
+        }
+
+        .btn-secondary {
+            background: #764ba2;
+        }
+
+        .btn-secondary:hover {
+            background: #6b46c1;
+        }
+
+        main {
+            margin-top: 80px;
+            padding: 2rem 0;
+        }
+
+        .page {
+            display: none;
+            background: white;
+            border-radius: 10px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        .page h1 {
+            color: #667eea;
+            margin-bottom: 2rem;
+            font-size: 2.5rem;
+        }
+
+        .hotel-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .hotel-card {
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s;
+        }
+
+        .hotel-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .hotel-image {
+            width: 100%;
+            height: 200px;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.2rem;
+        }
+
+        .hotel-info {
+            padding: 1.5rem;
+        }
+
+        .hotel-name {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+            color: #333;
+        }
+
+        .hotel-location {
+            color: #666;
+            margin-bottom: 1rem;
+        }
+
+        .hotel-price {
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 1rem;
+        }
+
+        .hotel-amenities {
+            color: #666;
+            margin-bottom: 1rem;
+            font-size: 0.9rem;
+        }
+
+        .login-form, .booking-form, .review-form, .admin-form {
+            max-width: 500px;
+            margin: 2rem auto;
+            background: white;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: #333;
+        }
+
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%;
+            padding: 0.8rem;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 1rem;
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .rating-stars {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .star {
+            font-size: 1.5rem;
+            color: #ddd;
+            cursor: pointer;
+            transition: color 0.3s;
+        }
+
+        .star.active {
+            color: #ffd700;
+        }
+
+        .reviews-list {
+            margin-top: 2rem;
+        }
+
+        .review-item {
+            background: #f8f9fa;
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin-bottom: 1rem;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        .review-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .review-user {
+            font-weight: bold;
+            color: #333;
+        }
+
+        .review-rating {
+            color: #ffd700;
+        }
+
+        .review-comment {
+            color: #666;
+            line-height: 1.6;
+        }
+
+        .booking-list {
+            margin-top: 2rem;
+        }
+
+        .booking-item {
+            background: #f8f9fa;
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin-bottom: 1rem;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        .booking-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .booking-status {
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        .status-confirmed {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status-pending {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .status-cancelled {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .admin-section {
+            background: #f8f9fa;
+            padding: 2rem;
+            border-radius: 10px;
+            margin-bottom: 2rem;
+        }
+
+        .admin-section h2 {
+            color: #667eea;
+            margin-bottom: 1rem;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .error-message {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 1rem;
+            border-radius: 5px;
+            margin-bottom: 1rem;
+        }
+
+        .success-message {
+            background: #d4edda;
+            color: #155724;
+            padding: 1rem;
+            border-radius: 5px;
+            margin-bottom: 1rem;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 2rem;
+            color: #666;
+        }
+
+        .hero-section {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 4rem 2rem;
+            text-align: center;
+            border-radius: 10px;
+            margin-bottom: 2rem;
+        }
+
+        .hero-title {
+            font-size: 3rem;
+            color: #667eea;
+            margin-bottom: 1rem;
+        }
+
+        .hero-subtitle {
+            font-size: 1.2rem;
+            color: #666;
+            margin-bottom: 2rem;
+        }
+
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+            
+            .hero-title {
+                font-size: 2rem;
+            }
+            
+            .hotel-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav>
+            <div class="logo">🏨 Hotel Booking</div>
+            <ul class="nav-links">
+                <li><a onclick="showPage('home')">Home</a></li>
+                <li><a onclick="showPage('hotels')">Hotels</a></li>
+                <li><a onclick="showPage('bookings')">My Bookings</a></li>
+                <li><a onclick="showPage('reviews')">Reviews</a></li>
+                <li><a onclick="showPage('admin')" id="adminLink" style="display: none;">Admin</a></li>
+            </ul>
+            <div class="user-info">
+                <span id="userWelcome" style="display: none;">Welcome, <span id="userName"></span>!</span>
+                <button class="btn" id="loginBtn" onclick="showPage('login')">Login</button>
+                <button class="btn btn-secondary" id="logoutBtn" onclick="logout()" style="display: none;">Logout</button>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <div class="container">
+            <!-- Home Page -->
+            <div id="home" class="page active">
+                <div class="hero-section">
+                    <h1 class="hero-title">Welcome to Hotel Booking System</h1>
+                    <p class="hero-subtitle">Find and book your perfect stay from our collection of premium hotels</p>
+                    <button class="btn" onclick="showPage('hotels')">Browse Hotels</button>
+                </div>
+            </div>
+
+            <!-- Login Page -->
+            <div id="login" class="page">
+                <div class="login-form">
+                    <h2>Login to Your Account</h2>
+                    <div id="loginError" class="error-message" style="display: none;"></div>
+                    <form onsubmit="login(event)">
+                        <div class="form-group">
+                            <label for="email">Email Address</label>
+                            <input type="email" id="email" name="email" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="username">Username (Optional)</label>
+                            <input type="text" id="username" name="username">
+                        </div>
+                        <button type="submit" class="btn">Login</button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Hotels Page -->
+            <div id="hotels" class="page">
+                <h1>Available Hotels</h1>
+                <div id="hotelsLoading" class="loading">Loading hotels...</div>
+                <div id="hotelsError" class="error-message" style="display: none;"></div>
+                <div id="hotelsGrid" class="hotel-grid"></div>
+            </div>
+
+            <!-- Bookings Page -->
+            <div id="bookings" class="page">
+                <h1>My Bookings</h1>
+                <div id="bookingsLoading" class="loading">Loading bookings...</div>
+                <div id="bookingsError" class="error-message" style="display: none;"></div>
+                <div id="bookingsList" class="booking-list"></div>
+            </div>
+
+            <!-- Reviews Page -->
+            <div id="reviews" class="page">
+                <h1>Hotel Reviews</h1>
+                <div id="reviewsLoading" class="loading">Loading reviews...</div>
+                <div id="reviewsError" class="error-message" style="display: none;"></div>
+                <div id="reviewsList" class="reviews-list"></div>
+            </div>
+
+            <!-- Admin Page -->
+            <div id="admin" class="page">
+                <h1>Admin Dashboard</h1>
+                <div id="adminError" class="error-message" style="display: none;"></div>
+                <div id="adminSuccess" class="success-message" style="display: none;"></div>
+                
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-number" id="totalHotels">0</div>
+                        <div class="stat-label">Total Hotels</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="totalBookings">0</div>
+                        <div class="stat-label">Total Bookings</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="totalUsers">0</div>
+                        <div class="stat-label">Total Users</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="totalReviews">0</div>
+                        <div class="stat-label">Total Reviews</div>
+                    </div>
+                </div>
+
+                <div class="admin-section">
+                    <h2>Add New Hotel</h2>
+                    <form onsubmit="addHotel(event)" class="admin-form">
+                        <div class="form-group">
+                            <label for="hotelName">Hotel Name</label>
+                            <input type="text" id="hotelName" name="hotelName" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="hotelLocation">Location</label>
+                            <input type="text" id="hotelLocation" name="hotelLocation" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="hotelDescription">Description</label>
+                            <textarea id="hotelDescription" name="hotelDescription" required></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="hotelAmenities">Amenities (comma-separated)</label>
+                            <input type="text" id="hotelAmenities" name="hotelAmenities" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="hotelPrice">Price per Night ($)</label>
+                            <input type="number" id="hotelPrice" name="hotelPrice" step="0.01" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="hotelRooms">Total Rooms</label>
+                            <input type="number" id="hotelRooms" name="hotelRooms" min="1" required>
+                        </div>
+                        <button type="submit" class="btn">Add Hotel</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Booking Modal -->
+    <div id="bookingModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 2000;">
+        <div class="booking-form" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); max-width: 500px; width: 90%;">
+            <h2>Book Your Stay</h2>
+            <button onclick="closeBookingModal()" style="position: absolute; top: 10px; right: 15px; background: none; border: none; font-size: 1.5rem; cursor: pointer;">&times;</button>
+            <div id="bookingError" class="error-message" style="display: none;"></div>
+            <form onsubmit="submitBooking(event)">
+                <div class="form-group">
+                    <label for="checkIn">Check-in Date</label>
+                    <input type="date" id="checkIn" name="checkIn" required>
+                </div>
+                <div class="form-group">
+                    <label for="checkOut">Check-out Date</label>
+                    <input type="date" id="checkOut" name="checkOut" required>
+                </div>
+                <div class="form-group">
+                    <label for="guestName">Guest Name</label>
+                    <input type="text" id="guestName" name="guestName" required>
+                </div>
+                <div class="form-group">
+                    <label for="guestEmail">Guest Email</label>
+                    <input type="email" id="guestEmail" name="guestEmail" required>
+                </div>
+                <div class="form-group">
+                    <label for="guestPhone">Guest Phone</label>
+                    <input type="tel" id="guestPhone" name="guestPhone" required>
+                </div>
+                <button type="submit" class="btn">Book Now</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Review Modal -->
+    <div id="reviewModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 2000;">
+        <div class="review-form" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); max-width: 500px; width: 90%;">
+            <h2>Write a Review</h2>
+            <button onclick="closeReviewModal()" style="position: absolute; top: 10px; right: 15px; background: none; border: none; font-size: 1.5rem; cursor: pointer;">&times;</button>
+            <div id="reviewError" class="error-message" style="display: none;"></div>
+            <form onsubmit="submitReview(event)">
+                <div class="form-group">
+                    <label>Rating</label>
+                    <div class="rating-stars">
+                        <span class="star" onclick="setRating(1)">★</span>
+                        <span class="star" onclick="setRating(2)">★</span>
+                        <span class="star" onclick="setRating(3)">★</span>
+                        <span class="star" onclick="setRating(4)">★</span>
+                        <span class="star" onclick="setRating(5)">★</span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="reviewComment">Your Review</label>
+                    <textarea id="reviewComment" name="reviewComment" required></textarea>
+                </div>
+                <button type="submit" class="btn">Submit Review</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Configuration
+        const API_BASE_URL = window.location.origin;
+        const HOTEL_SERVICE_URL = `${API_BASE_URL}:5001`;
+        const BOOKING_SERVICE_URL = `${API_BASE_URL}:5002`;
+        const USER_SERVICE_URL = `${API_BASE_URL}:5003`;
+        const REVIEW_SERVICE_URL = `${API_BASE_URL}:5004`;
+        const PAYMENT_SERVICE_URL = `${API_BASE_URL}:5005`;
+
+        // State management
+        let currentUser = null;
+        let currentRating = 0;
+        let selectedHotel = null;
+
+        // Initialize the application
+        document.addEventListener('DOMContentLoaded', function() {
+            // Check if user is logged in
+            const sessionToken = localStorage.getItem('sessionToken');
+            if (sessionToken) {
+                validateSession(sessionToken);
+            }
+            
+            // Load initial data
+            loadHotels();
+            loadReviews();
+            updateURL();
+        });
+
+        // Session management
+        function validateSession(token) {
+            fetch(`${USER_SERVICE_URL}/users/validate/${token}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.valid) {
+                        currentUser = data.user;
+                        updateUserInterface();
+                    } else {
+                        localStorage.removeItem('sessionToken');
+                    }
+                })
+                .catch(error => {
+                    console.error('Session validation error:', error);
+                    localStorage.removeItem('sessionToken');
+                });
+        }
+
+        function updateUserInterface() {
+            if (currentUser) {
+                document.getElementById('userName').textContent = currentUser.username || currentUser.email;
+                document.getElementById('userWelcome').style.display = 'block';
+                document.getElementById('loginBtn').style.display = 'none';
+                document.getElementById('logoutBtn').style.display = 'block';
+                
+                if (currentUser.is_admin) {
+                    document.getElementById('adminLink').style.display = 'block';
+                }
+            } else {
+                document.getElementById('userWelcome').style.display = 'none';
+                document.getElementById('loginBtn').style.display = 'block';
+                document.getElementById('logoutBtn').style.display = 'none';
+                document.getElementById('adminLink').style.display = 'none';
+            }
+        }
+
+        // Authentication functions
+        function login(event) {
+            event.preventDefault();
+            const formData = new FormData(event.target);
+            const email = formData.get('email');
+            const username = formData.get('username');
+
+            fetch(`${USER_SERVICE_URL}/users/login`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ email, username })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.user) {
+                    currentUser = data.user;
+                    localStorage.setItem('sessionToken', data.session_token);
+                    updateUserInterface();
+                    showPage('home');
+                } else {
+                    showError('loginError', data.error || 'Login failed');
+                }
+            })
+            .catch(error => {
+                showError('loginError', 'Network error. Please try again.');
+            });
+        }
+
+        function logout() {
+            localStorage.removeItem('sessionToken');
+            currentUser = null;
+            updateUserInterface();
+            showPage('home');
+        }
+
+        // Page navigation
+        function showPage(pageName) {
+            // Hide all pages
+            document.querySelectorAll('.page').forEach(page => {
+                page.classList.remove('active');
+            });
+            
+            // Show selected page
+            document.getElementById(pageName).classList.add('active');
+            
+            // Update URL
+            window.history.pushState({ page: pageName }, '', `#${pageName}`);
+            
+            // Load page-specific data
+            switch(pageName) {
+                case 'hotels':
+                    loadHotels();
+                    break;
+                case 'bookings':
+                    if (currentUser) {
+                        loadBookings();
+                    } else {
+                        showPage('login');
+                    }
+                    break;
+                case 'reviews':
+                    loadReviews();
+                    break;
+                case 'admin':
+                    if (currentUser && currentUser.is_admin) {
+                        loadAdminData();
+                    } else {
+                        showPage('home');
+                    }
+                    break;
+            }
+        }
+
+        function updateURL() {
+            const hash = window.location.hash.slice(1);
+            if (hash) {
+                showPage(hash);
+            }
+        }
+
+        // Handle browser back/forward
+        window.addEventListener('popstate', function(event) {
+            if (event.state && event.state.page) {
+                showPage(event.state.page);
+            }
+        });
+
+        // Hotel management
+        function loadHotels() {
+            document.getElementById('hotelsLoading').style.display = 'block';
+            document.getElementById('hotelsError').style.display = 'none';
+            
+            fetch(`${HOTEL_SERVICE_URL}/hotels`)
+                .then(response => response.json())
+                .then(hotels => {
+                    document.getElementById('hotelsLoading').style.display = 'none';
+                    displayHotels(hotels);
+                })
+                .catch(error => {
+                    document.getElementById('hotelsLoading').style.display = 'none';
+                    document.getElementById('hotelsError').style.display = 'block';
+                    document.getElementById('hotelsError').textContent = 'Failed to load hotels. Please try again.';
+                });
+        }
+
+        function displayHotels(hotels) {
+            const hotelsGrid = document.getElementById('hotelsGrid');
+            hotelsGrid.innerHTML = '';
+            
+            hotels.forEach(hotel => {
+                const hotelCard = document.createElement('div');
+                hotelCard.className = 'hotel-card';
+                hotelCard.innerHTML = `
+                    <div class="hotel-image">
+                        🏨 ${hotel.name}
+                    </div>
+                    <div class="hotel-info">
+                        <div class="hotel-name">${hotel.name}</div>
+                        <div class="hotel-location">📍 ${hotel.location}</div>
+                        <div class="hotel-price">$${hotel.price_per_night}/night</div>
+                        <div class="hotel-amenities">✨ ${hotel.amenities}</div>
+                        <div style="margin-top: 1rem;">
+                            <button class="btn" onclick="openBookingModal(${hotel.id})">Book Now</button>
+                            <button class="btn btn-secondary" onclick="openReviewModal(${hotel.id})">Write Review</button>
+                        </div>
+                    </div>
+                `;
+                hotelsGrid.appendChild(hotelCard);
+            });
+        }
+
+        function addHotel(event) {
+            event.preventDefault();
+            const formData = new FormData(event.target);
+            const hotelData = {
+                name: formData.get('hotelName'),
+                location: formData.get('hotelLocation'),
+                description: formData.get('hotelDescription'),
+                amenities: formData.get('hotelAmenities'),
+                price_per_night: parseFloat(formData.get('hotelPrice')),
+                total_rooms: parseInt(formData.get('hotelRooms'))
+            };
+
+            fetch(`${HOTEL_SERVICE_URL}/hotels`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(hotelData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.hotel_id) {
+                    showSuccess('adminSuccess', 'Hotel added successfully!');
+                    event.target.reset();
+                    loadHotels();
+                    loadAdminData();
+                } else {
+                    showError('adminError', data.error || 'Failed to add hotel');
+                }
+            })
+            .catch(error => {
+                showError('adminError', 'Network error. Please try again.');
+            });
+        }
+
+        // Booking management
+        function openBookingModal(hotelId) {
+            if (!currentUser) {
+                showPage('login');
+                return;
+            }
+            
+            selectedHotel = hotelId;
+            document.getElementById('bookingModal').style.display = 'block';
+            
+            // Set minimum date to today
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('checkIn').min = today;
+            document.getElementById('checkOut').min = today;
+            
+            // Pre-fill guest info
+            document.getElementById('guestName').value = `${currentUser.first_name} ${currentUser.last_name}`.trim();
+            document.getElementById('guestEmail').value = currentUser.email;
+        }
+
+        function closeBookingModal() {
+            document.getElementById('bookingModal').style.display = 'none';
+        }
+
+        function submitBooking(event) {
+            event.preventDefault();
+            const formData = new FormData(event.target);
+            
+            const bookingData = {
+                user_id: currentUser.id,
+                hotel_id: selectedHotel,
+                room_type_id: 1, // Default room type
+                check_in_date: formData.get('checkIn'),
+                check_out_date: formData.get('checkOut'),
+                guest_name: formData.get('guestName'),
+                guest_email: formData.get('guestEmail'),
+                guest_phone: formData.get('guestPhone'),
+                total_amount: 250.00 // Default amount
+            };
+
+            fetch(`${BOOKING_SERVICE_URL}/bookings`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(bookingData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.booking_id) {
+                    closeBookingModal();
+                    
+                    // Process payment
+                    const paymentData = {
+                        booking_id: data.booking_id,
+                        user_id: currentUser.id,
+                        amount: bookingData.total_amount,
+                        payment_method: 'credit_card'
+                    };
+                    
+                    return fetch(`${PAYMENT_SERVICE_URL}/payments/process`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify(paymentData)
+                    });
+                } else {
+                    throw new Error(data.error || 'Booking failed');
+                }
+            })
+            .then(response => response.json())
+            .then(paymentData => {
+                alert('Booking and payment successful!');
+                showPage('bookings');
+            })
+            .catch(error => {
+                showError('bookingError', error.message || 'Booking failed. Please try again.');
+            });
+        }
+
+        function loadBookings() {
+            if (!currentUser) return;
+            
+            document.getElementById('bookingsLoading').style.display = 'block';
+            document.getElementById('bookingsError').style.display = 'none';
+            
+            fetch(`${BOOKING_SERVICE_URL}/bookings/${currentUser.id}`)
+                .then(response => response.json())
+                .then(bookings => {
+                    document.getElementById('bookingsLoading').style.display = 'none';
+                    displayBookings(bookings);
+                })
+                .catch(error => {
+                    document.getElementById('bookingsLoading').style.display = 'none';
+                    document.getElementById('bookingsError').style.display = 'block';
+                    document.getElementById('bookingsError').textContent = 'Failed to load bookings. Please try again.';
+                });
+        }
+
+        function displayBookings(bookings) {
+            const bookingsList = document.getElementById('bookingsList');
+            bookingsList.innerHTML = '';
+            
+            if (bookings.length === 0) {
+                bookingsList.innerHTML = '<p>No bookings found.</p>';
+                return;
+            }
+            
+            bookings.forEach(booking => {
+                const bookingItem = document.createElement('div');
+                bookingItem.className = 'booking-item';
+                bookingItem.innerHTML = `
+                    <div class="booking-header">
+                        <h3>${booking.hotel_name}</h3>
+                        <span class="booking-status status-${booking.status}">${booking.status}</span>
+                    </div>
+                    <p><strong>Location:</strong> ${booking.location}</p>
+                    <p><strong>Check-in:</strong> ${booking.check_in_date}</p>
+                    <p><strong>Check-out:</strong> ${booking.check_out_date}</p>
+                    <p><strong>Guest:</strong> ${booking.guest_name}</p>
+                    <p><strong>Total Amount:</strong> $${booking.total_amount}</p>
+                    <p><strong>Booked on:</strong> ${new Date(booking.created_at).toLocaleDateString()}</p>
+                `;
+                bookingsList.appendChild(bookingItem);
+            });
+        }
+
+        // Review management
+        function openReviewModal(hotelId) {
+            if (!currentUser) {
+                showPage('login');
+                return;
+            }
+            
+            selectedHotel = hotelId;
+            document.getElementById('reviewModal').style.display = 'block';
+            currentRating = 0;
+            updateStars();
+        }
+
+        function closeReviewModal() {
+            document.getElementById('reviewModal').style.display = 'none';
+        }
+
+        function setRating(rating) {
+            currentRating = rating;
+            updateStars();
+        }
+
+        function updateStars() {
+            const stars = document.querySelectorAll('.star');
+            stars.forEach((star, index) => {
+                if (index < currentRating) {
+                    star.classList.add('active');
+                } else {
+                    star.classList.remove('active');
+                }
+            });
+        }
+
+        function submitReview(event) {
+            event.preventDefault();
+            const formData = new FormData(event.target);
+            
+            const reviewData = {
+                user_id: currentUser.id,
+                hotel_id: selectedHotel,
+                rating: currentRating,
+                comment: formData.get('reviewComment')
+            };
+
+            fetch(`${REVIEW_SERVICE_URL}/reviews`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(reviewData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.review_id) {
+                    closeReviewModal();
+                    alert('Review submitted successfully!');
+                    loadReviews();
+                } else {
+                    showError('reviewError', data.error || 'Failed to submit review');
+                }
+            })
+            .catch(error => {
+                showError('reviewError', 'Network error. Please try again.');
+            });
+        }
+
+        function loadReviews() {
+            document.getElementById('reviewsLoading').style.display = 'block';
+            document.getElementById('reviewsError').style.display = 'none';
+            
+            fetch(`${REVIEW_SERVICE_URL}/reviews/all`)
+                .then(response => response.json())
+                .then(reviews => {
+                    document.getElementById('reviewsLoading').style.display = 'none';
+                    displayReviews(reviews);
+                })
+                .catch(error => {
+                    document.getElementById('reviewsLoading').style.display = 'none';
+                    document.getElementById('reviewsError').style.display = 'block';
+                    document.getElementById('reviewsError').textContent = 'Failed to load reviews. Please try again.';
+                });
+        }
+
+        function displayReviews(reviews) {
+            const reviewsList = document.getElementById('reviewsList');
+            reviewsList.innerHTML = '';
+            
+            if (reviews.length === 0) {
+                reviewsList.innerHTML = '<p>No reviews found.</p>';
+                return;
+            }
+            
+            reviews.forEach(review => {
+                const reviewItem = document.createElement('div');
+                reviewItem.className = 'review-item';
+                reviewItem.innerHTML = `
+                    <div class="review-header">
+                        <div>
+                            <div class="review-user">${review.username || 'Anonymous'}</div>
+                            <div style="color: #666; font-size: 0.9rem;">${review.hotel_name} - ${review.location}</div>
+                        </div>
+                        <div class="review-rating">${'★'.repeat(review.rating)}${'☆'.repeat(5-review.rating)}</div>
+                    </div>
+                    <div class="review-comment">${review.comment}</div>
+                    <div style="color: #999; font-size: 0.8rem; margin-top: 0.5rem;">
+                        ${new Date(review.created_at).toLocaleDateString()}
+                    </div>
+                `;
+                reviewsList.appendChild(reviewItem);
+            });
+        }
+
+        // Admin functions
+        function loadAdminData() {
+            if (!currentUser || !currentUser.is_admin) return;
+            
+            // Load statistics
+            Promise.all([
+                fetch(`${HOTEL_SERVICE_URL}/hotels`),
+                fetch(`${BOOKING_SERVICE_URL}/bookings/all`),
+                fetch(`${USER_SERVICE_URL}/users`),
+                fetch(`${REVIEW_SERVICE_URL}/reviews/all`)
+            ])
+            .then(responses => Promise.all(responses.map(r => r.json())))
+            .then(([hotels, bookings, users, reviews]) => {
+                document.getElementById('totalHotels').textContent = hotels.length;
+                document.getElementById('totalBookings').textContent = bookings.length;
+                document.getElementById('totalUsers').textContent = users.length;
+                document.getElementById('totalReviews').textContent = reviews.length;
+            })
+            .catch(error => {
+                console.error('Failed to load admin data:', error);
+            });
+        }
+
+        // Utility functions
+        function showError(elementId, message) {
+            const errorElement = document.getElementById(elementId);
+            errorElement.textContent = message;
+            errorElement.style.display = 'block';
+            setTimeout(() => {
+                errorElement.style.display = 'none';
+            }, 5000);
+        }
+
+        function showSuccess(elementId, message) {
+            const successElement = document.getElementById(elementId);
+            successElement.textContent = message;
+            successElement.style.display = 'block';
+            setTimeout(() => {
+                successElement.style.display = 'none';
+            }, 5000);
+        }
+
+        // Handle date validation
+        document.getElementById('checkIn').addEventListener('change', function() {
+            const checkInDate = new Date(this.value);
+            const checkOutInput = document.getElementById('checkOut');
+            const minCheckOut = new Date(checkInDate);
+            minCheckOut.setDate(minCheckOut.getDate() + 1);
+            checkOutInput.min = minCheckOut.toISOString().split('T')[0];
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,110 @@
+version: '3.8'
+
+services:
+  mysql-db:
+    image: mysql:8.0
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_DATABASE: hotel_booking
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./database/init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - hotel-network
+
+  hotel-service:
+    build: ./hotel-service
+    ports:
+      - "5001:5001"
+    depends_on:
+      - mysql-db
+    environment:
+      - DB_HOST=mysql-db
+      - DB_USER=root
+      - DB_PASSWORD=password
+      - DB_NAME=hotel_booking
+      - DB_PORT=3306
+    networks:
+      - hotel-network
+
+  booking-service:
+    build: ./booking-service
+    ports:
+      - "5002:5002"
+    depends_on:
+      - mysql-db
+    environment:
+      - DB_HOST=mysql-db
+      - DB_USER=root
+      - DB_PASSWORD=password
+      - DB_NAME=hotel_booking
+      - DB_PORT=3306
+    networks:
+      - hotel-network
+
+  user-service:
+    build: ./user-service
+    ports:
+      - "5003:5003"
+    depends_on:
+      - mysql-db
+    environment:
+      - DB_HOST=mysql-db
+      - DB_USER=root
+      - DB_PASSWORD=password
+      - DB_NAME=hotel_booking
+      - DB_PORT=3306
+    networks:
+      - hotel-network
+
+  review-service:
+    build: ./review-service
+    ports:
+      - "5004:5004"
+    depends_on:
+      - mysql-db
+    environment:
+      - DB_HOST=mysql-db
+      - DB_USER=root
+      - DB_PASSWORD=password
+      - DB_NAME=hotel_booking
+      - DB_PORT=3306
+    networks:
+      - hotel-network
+
+  payment-service:
+    build: ./payment-service
+    ports:
+      - "5005:5005"
+    depends_on:
+      - mysql-db
+    environment:
+      - DB_HOST=mysql-db
+      - DB_USER=root
+      - DB_PASSWORD=password
+      - DB_NAME=hotel_booking
+      - DB_PORT=3306
+    networks:
+      - hotel-network
+
+  hotel-frontend:
+    build: ./frontend
+    ports:
+      - "80:80"
+    depends_on:
+      - hotel-service
+      - booking-service
+      - user-service
+      - review-service
+      - payment-service
+    networks:
+      - hotel-network
+
+volumes:
+  mysql_data:
+
+networks:
+  hotel-network:
+    driver: bridge

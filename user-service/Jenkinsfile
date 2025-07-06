@@ -1,0 +1,76 @@
+pipeline {
+    agent any
+    
+    environment {
+        DOCKER_IMAGE = "kastrov/user-service"
+        DOCKER_TAG = "${BUILD_NUMBER}"
+    }
+    
+    parameters {
+        choice(
+            name: 'ENVIRONMENT',
+            choices: ['dev', 'staging', 'prod'],
+            description: 'Select deployment environment'
+        )
+        booleanParam(
+            name: 'DEPLOY_TO_K8S',
+            defaultValue: false,
+            description: 'Deploy to Kubernetes cluster'
+        )
+    }
+    
+    stages {
+        stage('Checkout') {
+            steps {
+                checkout scm
+            }
+        }
+        
+        stage('Build Docker Image') {
+            steps {
+                script {
+                    dir('user-service') {
+                        docker.build("${DOCKER_IMAGE}:${DOCKER_TAG}")
+                        docker.build("${DOCKER_IMAGE}:latest")
+                    }
+                }
+            }
+        }
+        
+        stage('Push to DockerHub') {
+            steps {
+                script {
+                    docker.withRegistry('https://registry.hub.docker.com', 'dockerhub-creds') {
+                        docker.image("${DOCKER_IMAGE}:${DOCKER_TAG}").push()
+                        docker.image("${DOCKER_IMAGE}:latest").push()
+                    }
+                }
+            }
+        }
+        
+        stage('Deploy to Kubernetes') {
+            when {
+                params.DEPLOY_TO_K8S == true
+            }
+            steps {
+                script {
+                    withCredentials([aws(accessKeyVariable: 'AWS_ACCESS_KEY_ID', 
+                                       credentialsId: 'aws-creds', 
+                                       secretKeyVariable: 'AWS_SECRET_ACCESS_KEY')]) {
+                        sh """
+                            aws eks update-kubeconfig --region us-east-1 --name kastro-eks
+                            sed 's|IMAGE_TAG|${DOCKER_TAG}|g\' user-service/k8s/deployment.yaml | kubectl apply -f -
+                            kubectl apply -f user-service/k8s/service.yaml
+                        """
+                    }
+                }
+            }
+        }
+    }
+    
+    post {
+        always {
+            sh 'docker system prune -f'
+        }
+    }
+}
