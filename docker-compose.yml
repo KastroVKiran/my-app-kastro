@@ -10,9 +10,10 @@ services:
       - "3306:3306"
     volumes:
       - mysql_data:/var/lib/mysql
-      - ./database/init.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./database/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
     networks:
       - hotel-network
+    restart: unless-stopped
 
   hotel-service:
     build: ./hotel-service
@@ -28,6 +29,7 @@ services:
       - DB_PORT=3306
     networks:
       - hotel-network
+    restart: unless-stopped
 
   booking-service:
     build: ./booking-service
@@ -43,6 +45,7 @@ services:
       - DB_PORT=3306
     networks:
       - hotel-network
+    restart: unless-stopped
 
   user-service:
     build: ./user-service
@@ -58,6 +61,7 @@ services:
       - DB_PORT=3306
     networks:
       - hotel-network
+    restart: unless-stopped
 
   review-service:
     build: ./review-service
@@ -73,6 +77,7 @@ services:
       - DB_PORT=3306
     networks:
       - hotel-network
+    restart: unless-stopped
 
   payment-service:
     build: ./payment-service
@@ -88,6 +93,7 @@ services:
       - DB_PORT=3306
     networks:
       - hotel-network
+    restart: unless-stopped
 
   hotel-frontend:
     build: ./frontend
@@ -101,6 +107,7 @@ services:
       - payment-service
     networks:
       - hotel-network
+    restart: unless-stopped
 
 volumes:
   mysql_data:
